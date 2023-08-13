@@ -7,8 +7,15 @@ interface useLinearFunctionParams {
   duration: number;
 }
 interface useLinearFunctionReturn {
-  values: typeof valuesDefault;
-  intervals: typeof intervalsDefault;
+  values: {
+    numberX0: number | null;
+    numberEeasingPoint: number | null;
+    numberY0: number | null;
+  };
+  intervals: {
+    a: number | null;
+    b: number | null;
+  };
   setLinearNumbers: (
     x0: number,
     y0: number,
@@ -17,9 +24,9 @@ interface useLinearFunctionReturn {
 }
 
 const valuesDefault = {
-  numberX0: 0,
-  numberEeasingPoint: 0,
-  numberY0: 0,
+  numberX0: null,
+  numberEeasingPoint: null,
+  numberY0: null,
 };
 const intervalsDefault = {
   a: 0,
@@ -32,7 +39,7 @@ function useLinearFunction({
   duration,
 }: useLinearFunctionParams): useLinearFunctionReturn {
   const [values, setValues] = useState(valuesDefault);
-  const [intervals, setIntervals] = useState(intervalsDefault);
+  const [intervals, setIntervals] = useState({});
   const linear = new Linear({ transitionFrom, transitionTo, duration });
 
   function setLinearNumbers(

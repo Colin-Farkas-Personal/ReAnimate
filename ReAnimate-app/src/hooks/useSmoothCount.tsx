@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import useLinearFunction from "./useLinearFunction";
+import { Linear } from "../utilities/linear";
 
 type TransitionType = {
   linear: [x0: number, easingPoint: number | string | undefined, y0: number];
@@ -22,26 +22,53 @@ function useSmoothCount({
   duration,
   transitionType,
 }: UseSmoothCountParams): UseSmoothCountReturn {
-  const { values, intervals, setLinearNumbers } = useLinearFunction({
-    transitionFrom,
-    transitionTo,
-    duration,
-  });
   const [number, setNumber] = useState<number>(transitionFrom);
-  const intervalRef = useRef<number | undefined>();
+
+  const linear = new Linear({ transitionFrom, transitionTo, duration });
+  const [values, setValues] = useState<{
+    numberX0: number | undefined;
+    numberY0: number | undefined;
+  }>({
+    numberX0: undefined,
+    numberY0: undefined,
+  });
+  const [intervals, setIntervals] = useState<number | undefined>(undefined);
+  const intervalRef = useRef<number | undefined>(undefined);
 
   useEffect(() => {
-    if (intervals.a !== 0) {
-      console.log("a - ", intervals.a);
+    if (
+      intervals !== undefined &&
+      Object.values(values).every((item) => item !== undefined)
+    ) {
       intervalRef.current = setInterval(() => {
-        setNumber((prev) => prev + 1);
-      }, intervals.a);
+        if (values.numberX0! > values.numberY0!) {
+          setNumber((prev) => prev - 1);
+        } else if (values.numberX0! < values.numberY0!) {
+          setNumber((prev) => prev + 1);
+        }
+      }, 500);
     }
-  }, [intervals.a]);
+
+    return () => {
+      clearInterval(intervalRef.current);
+    };
+  }, [intervals]);
+
+  useEffect(() => {
+    console.log("number, numberY0 - ", number, values.numberY0!);
+    if (number == values.numberY0) clearInterval(intervalRef.current);
+  }, [number]);
 
   function startAnimation() {
-    clearInterval(intervalRef.current);
-    setLinearNumbers(0.1, 1);
+    setNumber(transitionFrom);
+    const { interval, values } = linear.simple(0, 1);
+
+    setValues((prev) => ({
+      ...prev,
+      numberX0: values.numberX0,
+      numberY0: values.numberY0,
+    }));
+    setIntervals(interval);
   }
   return { number, startAnimation };
 }

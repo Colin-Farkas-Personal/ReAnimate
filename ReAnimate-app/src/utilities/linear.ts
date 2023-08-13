@@ -15,10 +15,10 @@ export class Linear {
     this._duration = duration;
   }
 
-  linearSimple(
+  simple(
     x0: number,
     y0: number
-  ): { values: { numberX0: number; numberY0: number }; intervals: number } {
+  ): { values: { numberX0: number; numberY0: number }; interval: number } {
     console.log(x0, y0);
     const transitionDiff = Math.abs(this._transitionTo - this._transitionFrom);
     const a = transitionDiff * x0;
@@ -31,7 +31,7 @@ export class Linear {
         numberX0: a,
         numberY0: b,
       },
-      intervals: interval,
+      interval,
     };
   }
 }
