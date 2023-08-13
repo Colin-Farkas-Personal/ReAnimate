@@ -56,10 +56,17 @@ function useSmoothCount({
 
   useEffect(() => {
     console.log("number, numberY0 - ", number, values.numberY0!);
-    if (number == values.numberY0) clearInterval(intervalRef.current);
+    if (number == values.numberY0) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = undefined;
+      reset();
+    }
   }, [number]);
 
   function startAnimation() {
+    console.log("intervalRef -", intervalRef.current);
+    setNumber(0);
+
     setNumber(transitionFrom);
     const { interval, values } = linear.simple(0, 1);
 
@@ -69,6 +76,15 @@ function useSmoothCount({
       numberY0: values.numberY0,
     }));
     setIntervals(interval);
+  }
+
+  function reset() {
+    setValues((prev) => ({
+      ...prev,
+      numberX0: undefined,
+      numberY0: undefined,
+    }));
+    setIntervals(undefined);
   }
   return { number, startAnimation };
 }
