@@ -43,11 +43,9 @@ function useLinearSimple({
       Object.values(values).every((item) => item !== undefined)
     ) {
       intervalRef.current = setInterval(() => {
-        if (values.numberX0! > values.numberY0!) {
-          setLinearSimpleNumber((prev) => prev - 1);
-        } else if (values.numberX0! < values.numberY0!) {
-          setLinearSimpleNumber((prev) => prev + 1);
-        }
+        setLinearSimpleNumber((prev) =>
+          linear.getDirectionNumber(values.numberX0!, values.numberY0!, prev)
+        );
       }, intervalSpeed);
     }
 

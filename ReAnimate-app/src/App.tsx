@@ -4,7 +4,7 @@ function App() {
   const { number, startAnimation } = useSmoothCount({
     transitionFrom: 0,
     transitionTo: 10,
-    duration: 300,
+    duration: 3000,
     transitionType: { linear: [0.5, "0.25 50%", 0.8] },
   });
 

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Linear } from "../utilities/Linear";
 import useLinearSimple from "./useLinearSimple";
+import useLinearComplex from "./useLinearComplex";
 
 type TransitionType = {
   linear: [x0: number, easingPoint: number | string | undefined, y0: number];
@@ -30,12 +31,18 @@ function useSmoothCount({
     transitionTo,
     duration,
   });
+  const { linearComplexNumber, startLinearComplex } = useLinearComplex({
+    transitionFrom,
+    transitionTo,
+    duration,
+  });
+
   useEffect(() => {
-    setNumber(linearSimpleNumber);
-  }, [linearSimpleNumber]);
+    setNumber(linearComplexNumber);
+  }, [linearComplexNumber]);
 
   function startAnimation() {
-    startLinearSimple(0, 1);
+    startLinearComplex(0, 0.25, 1);
   }
   return { number, startAnimation };
 }
