@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Linear } from "../utilities/Linear";
+import isObjEmpty from "../helpers/isObjEmpty";
 
 // hook for getting linear number with easingPoint
 interface UseLinearComplexParams {
@@ -17,26 +18,15 @@ interface UseLinearComplexReturn {
 }
 
 interface IValues {
-  numberA: number | undefined;
-  numberAB: number | undefined;
-  numberBC: number | undefined;
-  numberC: number | undefined;
+  numberX0?: number;
+  numberMid?: number;
+  numberY0?: number;
 }
-const valuesDefault = {
-  numberA: undefined,
-  numberAB: undefined,
-  numberBC: undefined,
-  numberC: undefined,
-};
 
 interface IIntervalSpeed {
-  intervalAB: number | undefined;
-  intervalBC: number | undefined;
+  interval1?: number;
+  interval2?: number;
 }
-const intervalSpeedpeedDefault = {
-  intervalAB: undefined,
-  intervalBC: undefined,
-};
 
 function useLinearComplex({
   transitionFrom,
@@ -47,59 +37,42 @@ function useLinearComplex({
     useState<number>(transitionFrom);
 
   const linear = new Linear({ transitionFrom, transitionTo, duration });
-  const [values, setValues] = useState<IValues>(valuesDefault);
-  const [intervalSpeed, setIntervalSpeed] = useState<IIntervalSpeed>(
-    intervalSpeedpeedDefault
-  );
+  const [values, setValues] = useState<IValues>({});
+  const [intervalSpeeds, setIntervalSpeeds] = useState<IIntervalSpeed>({});
   const intervalARef = useRef<number | undefined>(undefined);
   const intervalBRef = useRef<number | undefined>(undefined);
 
-  function getFactor(number1: number, number2: number, prev: number): number {
-    if (number1 > number2) {
-      return prev - 1;
-    } else if (number1 < number2) {
-      return prev + 1;
-    }
-
-    return prev;
-  }
-
   useEffect(() => {
-    console.log("all values - ", values);
-    console.log("intervalBRef - ", intervalBRef);
-
     if (
-      Object.values(intervalSpeed).every((item) => item !== undefined) &&
-      Object.values(values).every((item) => item !== undefined) &&
+      !isObjEmpty(intervalSpeeds) &&
+      !isObjEmpty(values) &&
       !intervalARef.current
     ) {
-      console.log("values, intervalSpeed - ", values, intervalSpeed);
-
-      // First part
+      // First interval
       intervalARef.current = setInterval(() => {
         setLinearComplexNumber((prev) =>
-          getFactor(values.numberA!, values.numberAB!, prev)
+          linear.getDirectionNumber(values.numberX0!, values.numberMid!, prev)
         );
-      }, intervalSpeed.intervalAB);
+      }, intervalSpeeds.interval1);
     }
-  }, [intervalSpeed.intervalAB]);
+  }, [intervalSpeeds.interval1]);
 
   useEffect(() => {
-    if (intervalARef.current && linearComplexNumber == values.numberAB) {
+    if (intervalARef.current && linearComplexNumber == values.numberMid) {
       clearInterval(intervalARef.current);
       intervalARef.current = undefined;
 
-      // Second part
+      // Second interval
       intervalBRef.current = setInterval(() => {
         setLinearComplexNumber((prev) =>
-          getFactor(values.numberAB!, values.numberC!, prev)
+          linear.getDirectionNumber(values.numberMid!, values.numberY0!, prev)
         );
-      }, intervalSpeed.intervalBC);
+      }, intervalSpeeds.interval2);
     }
   }, [linearComplexNumber]);
 
   useEffect(() => {
-    if (intervalBRef.current && linearComplexNumber == values.numberC) {
+    if (intervalBRef.current && linearComplexNumber == values.numberY0) {
       clearInterval(intervalBRef.current);
       intervalBRef.current = undefined;
       reset();
@@ -111,38 +84,19 @@ function useLinearComplex({
     easingPoint: number | string,
     y0: number
   ) {
-    const { values, intervals } = linear.complex(x0, easingPoint, y0);
-    setLinearComplexNumber(values.numberA);
-
-    setValues((prev) => ({
-      ...prev,
-      numberA: values.numberA,
-      numberAB: values.numberAB,
-      numberBC: values.numberBC,
-      numberC: values.numberC,
-    }));
-
-    setIntervalSpeed((prev) => ({
-      ...prev,
-      intervalAB: intervals.intervalAB,
-      intervalBC: intervals.intervalBC,
-    }));
+    const { values: newValues, intervals } = linear.complex(
+      x0,
+      easingPoint,
+      y0
+    );
+    setLinearComplexNumber(newValues.numberX0 || 0);
+    setValues(newValues);
+    setIntervalSpeeds(intervals);
   }
 
   function reset() {
-    setValues((prev) => ({
-      ...prev,
-      numberA: undefined,
-      numberAB: undefined,
-      numberBC: undefined,
-      numberC: undefined,
-    }));
-
-    setIntervalSpeed((prev) => ({
-      ...prev,
-      intervalAB: undefined,
-      intervalBC: undefined,
-    }));
+    setValues({});
+    setIntervalSpeeds({});
   }
   return { linearComplexNumber, startLinearComplex };
 }

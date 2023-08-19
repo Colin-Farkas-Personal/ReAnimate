@@ -42,7 +42,7 @@ function useSmoothCount({
   }, [linearComplexNumber]);
 
   function startAnimation() {
-    startLinearComplex(0, 0.25, 1);
+    startLinearComplex(0.1, 0.9, 0.1);
   }
   return { number, startAnimation };
 }
