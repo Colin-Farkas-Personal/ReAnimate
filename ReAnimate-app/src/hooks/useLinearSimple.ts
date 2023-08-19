@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Linear } from "../utilities/Linear";
+import isObjEmpty from "../helpers/isObjEmpty";
 
 interface UseLinearSimpleParams {
   transitionFrom: number;
@@ -12,16 +13,9 @@ interface UseLinearSimpleReturn {
 }
 
 interface IValues {
-  numberX0: number | undefined;
-  numberY0: number | undefined;
+  numberX0?: number;
+  numberY0?: number;
 }
-const valuesDefault = {
-  numberX0: undefined,
-  numberY0: undefined,
-};
-
-const intervalSpeedpeedDefault = undefined;
-
 function useLinearSimple({
   transitionFrom,
   transitionTo,
@@ -31,17 +25,12 @@ function useLinearSimple({
     useState<number>(transitionFrom);
 
   const linear = new Linear({ transitionFrom, transitionTo, duration });
-  const [values, setValues] = useState<IValues>(valuesDefault);
-  const [intervalSpeed, setIntervalSpeed] = useState<number | undefined>(
-    intervalSpeedpeedDefault
-  );
+  const [values, setValues] = useState<IValues>({});
+  const [intervalSpeed, setIntervalSpeed] = useState<number | undefined>();
   const intervalRef = useRef<number | undefined>(undefined);
 
   useEffect(() => {
-    if (
-      intervalSpeed !== undefined &&
-      Object.values(values).every((item) => item !== undefined)
-    ) {
+    if (intervalSpeed && !isObjEmpty(values)) {
       intervalRef.current = setInterval(() => {
         setLinearSimpleNumber((prev) =>
           linear.getDirectionNumber(values.numberX0!, values.numberY0!, prev)
@@ -67,23 +56,12 @@ function useLinearSimple({
     setLinearSimpleNumber(transitionFrom);
 
     const { interval, values } = linear.simple(x0, y0);
-
-    console.log("interval, value - ", interval, values);
-
-    setValues((prev) => ({
-      ...prev,
-      numberX0: values.numberX0,
-      numberY0: values.numberY0,
-    }));
+    setValues(values);
     setIntervalSpeed(interval);
   }
 
   function reset() {
-    setValues((prev) => ({
-      ...prev,
-      numberX0: undefined,
-      numberY0: undefined,
-    }));
+    setValues({});
     setIntervalSpeed(undefined);
   }
 

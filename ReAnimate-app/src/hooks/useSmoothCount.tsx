@@ -38,11 +38,11 @@ function useSmoothCount({
   });
 
   useEffect(() => {
-    setNumber(linearComplexNumber);
-  }, [linearComplexNumber]);
+    setNumber(linearSimpleNumber);
+  }, [linearSimpleNumber]);
 
   function startAnimation() {
-    startLinearComplex(0.1, 0.9, 0.1);
+    startLinearSimple(0.1, 0.8);
   }
   return { number, startAnimation };
 }
