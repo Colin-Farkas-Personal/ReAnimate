@@ -1,11 +1,11 @@
-import useSmoothCount from "./hooks/useSmoothCount";
+import useNumberTransition from "./hooks/useNumberTransition";
 
 function App() {
-  const { number, startAnimation } = useSmoothCount({
+  const { number, startAnimation } = useNumberTransition({
     transitionFrom: 0,
     transitionTo: 10,
-    duration: 3000,
-    transitionType: { linear: [0.5, "0.25 50%", 0.8] },
+    duration: 5000,
+    transitionType: { linear: { x0: 0, y0: 1 } },
   });
 
   return (

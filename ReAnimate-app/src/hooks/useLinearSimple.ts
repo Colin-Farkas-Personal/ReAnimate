@@ -8,7 +8,7 @@ interface UseLinearSimpleParams {
   duration: number;
 }
 interface UseLinearSimpleReturn {
-  linearSimpleNumber: number;
+  linearSimpleNumber: number | undefined;
   startLinearSimple: (x0: number, y0: number) => void;
 }
 
@@ -21,8 +21,9 @@ function useLinearSimple({
   transitionTo,
   duration,
 }: UseLinearSimpleParams): UseLinearSimpleReturn {
-  const [linearSimpleNumber, setLinearSimpleNumber] =
-    useState<number>(transitionFrom);
+  const [linearSimpleNumber, setLinearSimpleNumber] = useState<
+    number | undefined
+  >();
 
   const linear = new Linear({ transitionFrom, transitionTo, duration });
   const [values, setValues] = useState<IValues>({});
@@ -33,7 +34,7 @@ function useLinearSimple({
     if (intervalSpeed && !isObjEmpty(values)) {
       intervalRef.current = setInterval(() => {
         setLinearSimpleNumber((prev) =>
-          linear.getDirectionNumber(values.numberX0!, values.numberY0!, prev)
+          linear.getDirectionNumber(values.numberX0!, values.numberY0!, prev!)
         );
       }, intervalSpeed);
     }
