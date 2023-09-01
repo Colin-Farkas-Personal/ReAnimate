@@ -15,7 +15,7 @@ export class Linear {
     this._duration = duration;
   }
 
-  private getTransitionDiff(): number {
+  public getTransitionDiff(): number {
     return Math.abs(this._transitionTo - this._transitionFrom);
   }
 
@@ -81,9 +81,9 @@ export class Linear {
     this.validateEasingPoint(easingPoint);
 
     let easingPointNumber =
-      typeof easingPoint === "number"
-        ? easingPoint
-        : parseFloat(easingPoint.split(" ")[0]);
+      typeof easingPoint === "string"
+        ? parseFloat(easingPoint.split(" ")[0])
+        : easingPoint;
     let easingPointProcent =
       typeof easingPoint === "string"
         ? parseInt(easingPoint.split(" ")[1].replace("%", ""))
@@ -101,6 +101,7 @@ export class Linear {
     const numberMidY0 = Math.abs(Math.floor(numberY0 - numberMid));
     const interval2 = Math.floor(durationMidY0 / numberMidY0);
 
+    console.log("values, intervals - ");
     return {
       values: {
         numberX0,

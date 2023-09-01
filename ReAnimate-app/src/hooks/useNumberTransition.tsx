@@ -1,18 +1,21 @@
 import { useEffect, useState } from "react";
 import useLinearSimple from "./useLinearSimple";
 import useLinearComplex from "./useLinearComplex";
-
-type TLinear = {
-  linear:
-    | { x0: number; y0: number }
-    | { x0: number; easingPoint: number | string; y0: number };
-};
+import {
+  TLinearKeyWords,
+  TLinearFunction,
+  TCubicBezierKeyWords,
+  TCubicBezierFunction,
+} from "../types/TEasingFunctions";
+import useLinearSimple2 from "./useLinearSimple2";
 
 interface useNumberTransitionParams {
   transitionFrom: number;
   transitionTo: number;
   duration: number;
-  transitionType: TLinear;
+  transitionType:
+    | (TLinearKeyWords | TLinearFunction)
+    | (TCubicBezierKeyWords | TCubicBezierFunction);
 }
 interface useNumberTransitionReturn {
   number: number;
@@ -25,7 +28,7 @@ interface useNumberTransitionReturn {
  * @param {number} transitionFrom - Number to start the transition from.
  * @param {number} transitionTo - Number to transition to.
  * @param {number} duration - Total duration of the transition in milliseconds.
- * @param {TLinear} transitionType - Type of transition to apply. Can be linear, cubicBezier, or step.
+ * @param {TLinearFunction} transitionType - Type of transition to apply. Can be linear, cubicBezier, or step.
  *
  * @returns {useNumberTransitionReturn} An object containing the current number and a function to start the animation.
  */
@@ -48,11 +51,17 @@ function useNumberTransition({
     duration,
   });
 
+  const { linearSimpleNumber2 } = useLinearSimple2({
+    transitionFrom,
+    transitionTo,
+    duration,
+  });
+
   useEffect(() => {
     console.log("linearSimple (nothinng) - ", linearSimpleNumber);
-    if (linearSimpleNumber !== undefined) {
-      console.log("simple - ", linearSimpleNumber);
-      setNumber(linearSimpleNumber);
+    if (linearSimpleNumber2 !== undefined) {
+      console.log("simple - ", linearSimpleNumber2);
+      setNumber(linearSimpleNumber2);
       return;
     }
 
@@ -64,8 +73,19 @@ function useNumberTransition({
   }, [linearSimpleNumber, linearComplexNumber]);
 
   function startAnimation() {
-    if (typeof transitionType === "string" && transitionType === "linear") {
-      linearTransition();
+    if (typeof transitionType === "string") {
+      switch (transitionType) {
+        case "linear": {
+          // startLinearSimple2();
+          break;
+        }
+
+        case "ease": {
+          // easeTransition
+        }
+      }
+
+      return;
     }
 
     // Linear logic
@@ -73,11 +93,12 @@ function useNumberTransition({
     console.log("selectedTransitionType - ", selectedTransitionType);
     switch (selectedTransitionType) {
       case "linear": {
-        if ("easingPoint" in transitionType.linear) {
-          const { x0, easingPoint, y0 } = transitionType.linear;
+        const isTypeLinear = transitionType as TLinearFunction;
+        if ("easingPoint" in isTypeLinear.linear) {
+          const { x0, easingPoint, y0 } = isTypeLinear.linear;
           startLinearComplex(x0, easingPoint, y0);
         } else {
-          const { x0, y0 } = transitionType.linear;
+          const { x0, y0 } = isTypeLinear.linear;
           startLinearSimple(x0, y0);
         }
         break;
@@ -87,10 +108,6 @@ function useNumberTransition({
         throw new Error("Provide a valid transitionType");
         break;
     }
-  }
-
-  function linearTransition() {
-    startLinearSimple(0, 1);
   }
 
   return { number, startAnimation };
