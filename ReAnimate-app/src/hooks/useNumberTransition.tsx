@@ -19,7 +19,7 @@ interface useNumberTransitionParams {
 }
 interface useNumberTransitionReturn {
   number: number;
-  startAnimation: () => void;
+  startTransition: () => void;
 }
 
 /**
@@ -51,32 +51,24 @@ function useNumberTransition({
     duration,
   });
 
-  const { linearSimpleNumber2 } = useLinearSimple2({
+  const { linearNumber, startLinearTransition } = useLinearSimple2({
     transitionFrom,
     transitionTo,
     duration,
   });
 
   useEffect(() => {
-    console.log("linearSimple (nothinng) - ", linearSimpleNumber);
-    if (linearSimpleNumber2 !== undefined) {
-      console.log("simple - ", linearSimpleNumber2);
-      setNumber(linearSimpleNumber2);
-      return;
+    if (linearNumber !== undefined) {
+      setNumber(linearNumber);
     }
+  }, [linearNumber]);
 
-    if (linearComplexNumber !== undefined) {
-      console.log("complex - ", linearComplexNumber);
-      setNumber(linearComplexNumber);
-      return;
-    }
-  }, [linearSimpleNumber, linearComplexNumber]);
-
-  function startAnimation() {
+  function startTransition() {
     if (typeof transitionType === "string") {
       switch (transitionType) {
         case "linear": {
-          // startLinearSimple2();
+          console.log("(#0) linear");
+          startLinearTransition(0.2, 0.4);
           break;
         }
 
@@ -110,6 +102,6 @@ function useNumberTransition({
     }
   }
 
-  return { number, startAnimation };
+  return { number, startTransition };
 }
 export default useNumberTransition;
