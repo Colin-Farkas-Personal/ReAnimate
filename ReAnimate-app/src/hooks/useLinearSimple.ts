@@ -1,72 +1,62 @@
-import { useEffect, useRef, useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Linear } from "../utilities/Linear";
-import isObjEmpty from "../helpers/isObjEmpty";
+import { easeLinear } from "../helpers/easingFunctions";
 
-interface UseLinearSimpleParams {
+interface useTransitionAnimationProps {
   transitionFrom: number;
   transitionTo: number;
   duration: number;
 }
-interface UseLinearSimpleReturn {
-  linearSimpleNumber: number | undefined;
-  startLinearSimple: (x0: number, y0: number) => void;
-}
 
-interface IValues {
-  numberX0?: number;
-  numberY0?: number;
-}
 function useLinearSimple({
   transitionFrom,
   transitionTo,
   duration,
-}: UseLinearSimpleParams): UseLinearSimpleReturn {
-  const [linearSimpleNumber, setLinearSimpleNumber] = useState<
-    number | undefined
-  >();
+}: useTransitionAnimationProps) {
+  const [linearSimpleNumber, setLinearNumber] = useState<number>(0);
+  const animationRef = useRef<number | null>(null);
+  const linear = useRef(new Linear({ transitionFrom, transitionTo, duration }));
 
-  const linear = new Linear({ transitionFrom, transitionTo, duration });
-  const [values, setValues] = useState<IValues>({});
-  const [intervalSpeed, setIntervalSpeed] = useState<number | undefined>();
-  const intervalRef = useRef<number | undefined>(undefined);
+  const startLinearSimple = useCallback(
+    (x0: number, y0: number) => {
+      if (animationRef.current !== null) {
+        cancelAnimationFrame(animationRef.current);
+      }
 
-  useEffect(() => {
-    if (intervalSpeed && !isObjEmpty(values)) {
-      intervalRef.current = setInterval(() => {
-        setLinearSimpleNumber((prev) =>
-          linear.getDirectionNumber(values.numberX0!, values.numberY0!, prev!)
-        );
-      }, intervalSpeed);
+      const { values } = linear.current.simple(x0, y0);
+      const vX0 = values.numberX0;
+      const vY0 = values.numberY0;
+
+      const startTime = performance.now();
+
+      const animate = (currentTime: number) => {
+        const elapsedTime = currentTime - startTime;
+
+        const progress = easeLinear(Math.min(elapsedTime / duration, 1));
+        const range = vY0 - vX0;
+
+        // 4% - 4 + 4
+        const newValue = progress * range + vX0;
+        setLinearNumber(newValue);
+
+        if (progress < 1) {
+          animationRef.current = requestAnimationFrame(animate);
+        }
+      };
+
+      animationRef.current = requestAnimationFrame(animate);
+    },
+    [duration]
+  );
+
+  function cancelLinearSimple() {
+    if (animationRef.current !== null) {
+      cancelAnimationFrame(animationRef.current);
     }
-
-    return () => {
-      clearInterval(intervalRef.current);
-    };
-  }, [intervalSpeed]);
-
-  useEffect(() => {
-    if (linearSimpleNumber == values.numberY0) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = undefined;
-      reset();
-    }
-  }, [linearSimpleNumber]);
-
-  function startLinearSimple(x0: number, y0: number) {
-    // Reset on every new call
-    setLinearSimpleNumber(transitionFrom);
-
-    const { interval, values } = linear.simple(x0, y0);
-    setValues(values);
-    setIntervalSpeed(interval);
+    setLinearNumber(0);
   }
 
-  function reset() {
-    setValues({});
-    setIntervalSpeed(undefined);
-  }
-
-  return { linearSimpleNumber, startLinearSimple };
+  return { linearSimpleNumber, startLinearSimple, cancelLinearSimple };
 }
 
 export default useLinearSimple;

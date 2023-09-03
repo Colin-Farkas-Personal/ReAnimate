@@ -26,19 +26,18 @@ export class Linear {
   simple(
     x0: number,
     y0: number
-  ): { values: { numberX0: number; numberY0: number }; interval: number } {
+  ): { values: { numberX0: number; numberY0: number } } {
     const transitionDiff = this.getTransitionDiff();
-    const a = transitionDiff * x0;
-    const b = transitionDiff * y0;
+    const minValue = Math.min(this._transitionFrom, this._transitionTo);
 
-    const interval = this.calculateInterval(b - a);
+    const a = minValue + transitionDiff * x0;
+    const b = transitionDiff * y0 + minValue;
 
     return {
       values: {
         numberX0: a,
         numberY0: b,
       },
-      interval,
     };
   }
 

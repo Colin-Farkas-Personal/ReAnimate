@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
-import useLinearSimple from "./useLinearSimple";
-import useLinearComplex from "./useLinearComplex";
+import useLinearComplex from "./useLinearComplex1";
 import {
   TLinearKeyWords,
   TLinearFunction,
   TCubicBezierKeyWords,
   TCubicBezierFunction,
 } from "../types/TEasingFunctions";
-import useLinearSimple2 from "./useLinearSimple2";
+import useLinearSimple from "./useLinearSimple";
 
 interface useNumberTransitionParams {
   transitionFrom: number;
@@ -16,9 +15,10 @@ interface useNumberTransitionParams {
   transitionType:
     | (TLinearKeyWords | TLinearFunction)
     | (TCubicBezierKeyWords | TCubicBezierFunction);
+  decimalPlaces?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
 }
 interface useNumberTransitionReturn {
-  number: number;
+  number: string;
   startTransition: () => void;
 }
 
@@ -29,14 +29,16 @@ interface useNumberTransitionReturn {
  * @param {number} transitionTo - Number to transition to.
  * @param {number} duration - Total duration of the transition in milliseconds.
  * @param {TLinearFunction} transitionType - Type of transition to apply. Can be linear, cubicBezier, or step.
+ * @param {TLinearFunction} decimalPlaces - Number of decimal places (0-6). If not specified, is set to 0.
  *
- * @returns {useNumberTransitionReturn} An object containing the current number and a function to start the animation.
+ * @returns {useNumberTransitionReturn} An object containing the current number (as a string) and a function to start the animation.
  */
 function useNumberTransition({
   transitionFrom,
   transitionTo,
   duration,
   transitionType,
+  decimalPlaces,
 }: useNumberTransitionParams): useNumberTransitionReturn {
   const [number, setNumber] = useState<number>(transitionFrom);
 
@@ -51,24 +53,22 @@ function useNumberTransition({
     duration,
   });
 
-  const { linearNumber, startLinearTransition } = useLinearSimple2({
-    transitionFrom,
-    transitionTo,
-    duration,
-  });
-
   useEffect(() => {
-    if (linearNumber !== undefined) {
-      setNumber(linearNumber);
+    if (linearSimpleNumber !== undefined) {
+      setNumber(linearSimpleNumber);
     }
-  }, [linearNumber]);
+
+    return () => {
+      setNumber(0);
+    };
+  }, [linearSimpleNumber]);
 
   function startTransition() {
     if (typeof transitionType === "string") {
       switch (transitionType) {
         case "linear": {
           console.log("(#0) linear");
-          startLinearTransition(0.2, 0.4);
+          startLinearSimple(0, 1);
           break;
         }
 
@@ -102,6 +102,9 @@ function useNumberTransition({
     }
   }
 
-  return { number, startTransition };
+  return {
+    number: number.toFixed(decimalPlaces),
+    startTransition,
+  };
 }
 export default useNumberTransition;
