@@ -94,11 +94,11 @@ export class Linear {
 
     const durationMid = Math.floor(this._duration * (easingPointProcent / 100));
     const numberMid = Math.abs(Math.floor(transitionDiff * easingPointNumber));
-    const interval1 = Math.floor(durationMid / numberMid);
+    const interval1 = Math.floor(durationMid);
 
     const durationMidY0 = Math.floor(this._duration - durationMid);
     const numberMidY0 = Math.abs(Math.floor(numberY0 - numberMid));
-    const interval2 = Math.floor(durationMidY0 / numberMidY0);
+    const interval2 = Math.floor(durationMidY0);
 
     console.log("values, intervals - ");
     return {

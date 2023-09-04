@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import useLinearComplex from "./useLinearComplex1";
+import useLinearComplex from "./useLinearComplex";
 import {
   TLinearKeyWords,
   TLinearFunction,
@@ -63,6 +63,16 @@ function useNumberTransition({
     };
   }, [linearSimpleNumber]);
 
+  useEffect(() => {
+    if (linearComplexNumber !== undefined) {
+      setNumber(linearComplexNumber);
+    }
+
+    return () => {
+      setNumber(0);
+    };
+  }, [linearComplexNumber]);
+
   function startTransition() {
     if (typeof transitionType === "string") {
       switch (transitionType) {
@@ -88,6 +98,7 @@ function useNumberTransition({
         const isTypeLinear = transitionType as TLinearFunction;
         if ("easingPoint" in isTypeLinear.linear) {
           const { x0, easingPoint, y0 } = isTypeLinear.linear;
+          console.log("easingPoint - ", easingPoint);
           startLinearComplex(x0, easingPoint, y0);
         } else {
           const { x0, y0 } = isTypeLinear.linear;

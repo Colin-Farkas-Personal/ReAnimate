@@ -2,7 +2,7 @@ import { useState, useRef, useCallback } from "react";
 import { Linear } from "../utilities/Linear";
 import { easeLinear } from "../helpers/easingFunctions";
 
-interface useTransitionAnimationProps {
+interface UseLinearSimpleProps {
   transitionFrom: number;
   transitionTo: number;
   duration: number;
@@ -12,7 +12,7 @@ function useLinearSimple({
   transitionFrom,
   transitionTo,
   duration,
-}: useTransitionAnimationProps) {
+}: UseLinearSimpleProps) {
   const [linearSimpleNumber, setLinearNumber] = useState<number>(0);
   const animationRef = useRef<number | null>(null);
   const linear = useRef(new Linear({ transitionFrom, transitionTo, duration }));
