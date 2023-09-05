@@ -16,6 +16,7 @@ function useLinearComplex({
   const [linearComplexNumber, setLinearComplexNumber] = useState<number>(0);
   const animationRef = useRef<number | null>(null);
   const linear = useRef(new Linear({ transitionFrom, transitionTo, duration }));
+  const startTime = useRef<number>(0);
 
   const startLinearComplex = useCallback(
     (x0: number, easingPoint: string | number, y0: number) => {
@@ -33,38 +34,55 @@ function useLinearComplex({
       const interval2 = intervals.interval2;
       console.log("intervals - ", interval1, interval2);
 
-      const startTime = performance.now();
-
       // 2 - 4 - 8
       // 1000ms - 500ms
-      const animate = (
-        currentTime: number,
-        intervalDuration: number = interval1
-      ) => {
-        const elapsedTime = currentTime - startTime;
 
-        const progress = easeLinear(
-          Math.min(elapsedTime / intervalDuration, 1)
+      // first
+
+      startTime.current = performance.now();
+      console.log("START - ", startTime.current);
+      const animation1Promise = new Promise((resolve, reject) => {
+        animationRef.current = requestAnimationFrame((currentTime) => {
+          animate(currentTime, { v1: vX0, v2: vMid }, interval1);
+          resolve("Success!");
+        });
+      });
+
+      console.log("linearComplexNumber ### - ", linearComplexNumber);
+      animation1Promise.then(() => {
+        startTime.current = performance.now();
+        console.log("START #2 - ", startTime.current);
+        animationRef.current = requestAnimationFrame((currentTime) =>
+          animate(currentTime, { v1: vMid, v2: vY0 }, interval2)
         );
-        const range = vY0 - vX0;
-
-        // 4% - 4 + 4
-        const newValue = progress * range + vX0;
-        setLinearComplexNumber(newValue);
-
-        if (progress < 1) {
-          animationRef.current = requestAnimationFrame(animate);
-        } else if (progress >= 1 && intervalDuration === interval1) {
-          animationRef.current = requestAnimationFrame((newTime) =>
-            animate(newTime, interval2)
-          );
-        }
-      };
-
-      animationRef.current = requestAnimationFrame(animate);
+      });
     },
     [duration]
   );
+
+  const animate = (
+    currentTime: number,
+    values: { v1: number; v2: number },
+    intervalDuration: number
+  ) => {
+    const elapsedTime = currentTime - startTime.current;
+    console.log("current - starttime", currentTime, startTime);
+    console.log("interval - ", intervalDuration);
+
+    const progress = easeLinear(Math.min(elapsedTime / intervalDuration, 1));
+    console.log("PROGRESS - ", progress);
+    const range = values.v2 - values.v1;
+
+    // 4% - 4 + 4
+    const newValue = progress * range + values.v1;
+    setLinearComplexNumber(newValue);
+
+    if (progress < 1) {
+      animationRef.current = requestAnimationFrame((newCurrentTime) =>
+        animate(newCurrentTime, values, intervalDuration)
+      );
+    }
+  };
 
   function cancelLinearComplex() {
     if (animationRef.current !== null) {
