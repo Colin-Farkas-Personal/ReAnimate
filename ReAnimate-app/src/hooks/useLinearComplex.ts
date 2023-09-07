@@ -19,7 +19,7 @@ function useLinearComplex({
   const startTime = useRef<number>(0);
 
   const startLinearComplex = useCallback(
-    (x0: number, easingPoint: string | number, y0: number) => {
+    async (x0: number, easingPoint: string | number, y0: number) => {
       if (animationRef.current !== null) {
         cancelAnimationFrame(animationRef.current);
       }
@@ -34,55 +34,41 @@ function useLinearComplex({
       const interval2 = intervals.interval2;
       console.log("intervals - ", interval1, interval2);
 
-      // 2 - 4 - 8
-      // 1000ms - 500ms
+      // Define a promise-based animation function
+      const animatePromise = (
+        values: { v1: number; v2: number },
+        intervalDuration: number
+      ) => {
+        return new Promise<void>((resolve) => {
+          const animateCallback = (currentTime: number) => {
+            const elapsedTime = currentTime - startTime.current;
+            const progress = easeLinear(
+              Math.min(elapsedTime / intervalDuration, 1)
+            );
+            const range = values.v2 - values.v1;
+            const newValue = progress * range + values.v1;
+            setLinearComplexNumber(newValue);
 
-      // first
+            if (progress < 1) {
+              animationRef.current = requestAnimationFrame(animateCallback);
+            } else {
+              resolve(); // Resolve the promise when the animation is complete
+            }
+          };
 
-      startTime.current = performance.now();
-      console.log("START - ", startTime.current);
-      const animation1Promise = new Promise((resolve, reject) => {
-        animationRef.current = requestAnimationFrame((currentTime) => {
-          animate(currentTime, { v1: vX0, v2: vMid }, interval1);
-          resolve("Success!");
+          startTime.current = performance.now();
+          animationRef.current = requestAnimationFrame(animateCallback);
         });
-      });
+      };
 
-      console.log("linearComplexNumber ### - ", linearComplexNumber);
-      animation1Promise.then(() => {
-        startTime.current = performance.now();
-        console.log("START #2 - ", startTime.current);
-        animationRef.current = requestAnimationFrame((currentTime) =>
-          animate(currentTime, { v1: vMid, v2: vY0 }, interval2)
-        );
-      });
+      // Start the first animation and wait for it to complete
+      await animatePromise({ v1: vX0, v2: vMid }, interval1);
+
+      // Start the second animation and wait for it to complete
+      await animatePromise({ v1: vMid, v2: vY0 }, interval2);
     },
     [duration]
   );
-
-  const animate = (
-    currentTime: number,
-    values: { v1: number; v2: number },
-    intervalDuration: number
-  ) => {
-    const elapsedTime = currentTime - startTime.current;
-    console.log("current - starttime", currentTime, startTime);
-    console.log("interval - ", intervalDuration);
-
-    const progress = easeLinear(Math.min(elapsedTime / intervalDuration, 1));
-    console.log("PROGRESS - ", progress);
-    const range = values.v2 - values.v1;
-
-    // 4% - 4 + 4
-    const newValue = progress * range + values.v1;
-    setLinearComplexNumber(newValue);
-
-    if (progress < 1) {
-      animationRef.current = requestAnimationFrame((newCurrentTime) =>
-        animate(newCurrentTime, values, intervalDuration)
-      );
-    }
-  };
 
   function cancelLinearComplex() {
     if (animationRef.current !== null) {

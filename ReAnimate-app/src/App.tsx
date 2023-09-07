@@ -4,8 +4,8 @@ function App() {
   const { number, startTransition } = useNumberTransition({
     transitionFrom: 0,
     transitionTo: 10,
-    duration: 5000,
-    transitionType: { linear: { x0: 0.8, easingPoint: "0.4 75%", y0: 1 } },
+    duration: 1000,
+    transitionType: { linear: { x0: 0.2, easingPoint: "0 90%", y0: 1 } },
   });
 
   return (
