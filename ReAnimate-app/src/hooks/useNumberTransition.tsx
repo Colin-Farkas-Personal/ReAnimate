@@ -77,7 +77,6 @@ function useNumberTransition({
     if (typeof transitionType === "string") {
       switch (transitionType) {
         case "linear": {
-          console.log("(#0) linear");
           startLinearSimple(0, 1);
           break;
         }
@@ -92,13 +91,11 @@ function useNumberTransition({
 
     // Linear logic
     const selectedTransitionType = Object.keys(transitionType).toString();
-    console.log("selectedTransitionType - ", selectedTransitionType);
     switch (selectedTransitionType) {
       case "linear": {
         const isTypeLinear = transitionType as TLinearFunction;
         if ("easingPoint" in isTypeLinear.linear) {
           const { x0, easingPoint, y0 } = isTypeLinear.linear;
-          console.log("easingPoint - ", easingPoint);
           startLinearComplex(x0, easingPoint, y0);
         } else {
           const { x0, y0 } = isTypeLinear.linear;

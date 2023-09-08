@@ -100,7 +100,6 @@ export class Linear {
     const numberMidY0 = Math.abs(Math.floor(numberY0 - numberMid));
     const interval2 = Math.floor(durationMidY0);
 
-    console.log("values, intervals - ");
     return {
       values: {
         numberX0,

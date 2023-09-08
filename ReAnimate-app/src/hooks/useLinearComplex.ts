@@ -23,16 +23,14 @@ function useLinearComplex({
       if (animationRef.current !== null) {
         cancelAnimationFrame(animationRef.current);
       }
-      console.log("x0 easingPoint y0", x0, easingPoint, y0);
 
       const { values, intervals } = linear.current.complex(x0, easingPoint, y0);
       const vX0 = values.numberX0;
       const vMid = values.numberMid;
       const vY0 = values.numberY0;
-      console.log("values - ", vX0, vMid, vY0);
+
       const interval1 = intervals.interval1;
       const interval2 = intervals.interval2;
-      console.log("intervals - ", interval1, interval2);
 
       // Define a promise-based animation function
       const animatePromise = (
