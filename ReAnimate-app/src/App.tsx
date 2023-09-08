@@ -3,9 +3,9 @@ import useNumberTransition from "./hooks/useNumberTransition";
 function App() {
   const { number, startTransition } = useNumberTransition({
     transitionFrom: 0,
-    transitionTo: 10,
-    duration: 1000,
-    transitionType: { linear: { x0: 0.2, easingPoint: "0 90%", y0: 1 } },
+    transitionTo: 100,
+    duration: 4000,
+    transitionType: { cubicBezier: { x1: 0.42, x2: 0, y1: 1.0, y2: 1.0 } },
   });
 
   return (

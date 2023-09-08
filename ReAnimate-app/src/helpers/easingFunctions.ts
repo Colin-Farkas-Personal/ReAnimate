@@ -4,8 +4,26 @@ export function easeLinear(t: number) {
 }
 
 // Ease-in
-export function easeIn(x: number): number {
-  return 1 - Math.cos((x * Math.PI) / 2);
+export function easeCubicBezier(
+  p1: [number, number],
+  p2: [number, number],
+  t: number
+): number {
+  // Ensure t is within the range [0, 1]
+  t = Math.min(1, Math.max(0, t));
+
+  // Calculate intermediate values
+  const term1 = (1 - t) ** 3 * 0;
+  const term2 = 3 * (1 - t) ** 2 * t * p1[0];
+  const term3 = 3 * (1 - t) * t ** 2 * p2[0];
+  const term4 = t ** 3 * 1;
+
+  // Combine the intermediate terms to calculate cubicBezierValue
+  const cubicBezierValue = term1 + term2 + term3 + term4;
+
+  // Scale the value to go from 0 to 10
+
+  return cubicBezierValue;
 }
 
 // Ease-out

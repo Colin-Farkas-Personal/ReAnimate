@@ -7,6 +7,7 @@ import {
   TCubicBezierFunction,
 } from "../types/TEasingFunctions";
 import useLinearSimple from "./useLinearSimple";
+import useCubicBezier from "./useCubicBezier";
 
 interface useNumberTransitionParams {
   transitionFrom: number;
@@ -53,6 +54,12 @@ function useNumberTransition({
     duration,
   });
 
+  const { cubicBezierNumber, startCubicBezier } = useCubicBezier({
+    transitionFrom,
+    transitionTo,
+    duration,
+  });
+
   useEffect(() => {
     if (linearSimpleNumber !== undefined) {
       setNumber(linearSimpleNumber);
@@ -72,6 +79,16 @@ function useNumberTransition({
       setNumber(0);
     };
   }, [linearComplexNumber]);
+
+  useEffect(() => {
+    if (cubicBezierNumber !== undefined) {
+      setNumber(cubicBezierNumber);
+    }
+
+    return () => {
+      setNumber(0);
+    };
+  }, [cubicBezierNumber]);
 
   function startTransition() {
     if (typeof transitionType === "string") {
@@ -101,6 +118,12 @@ function useNumberTransition({
           const { x0, y0 } = isTypeLinear.linear;
           startLinearSimple(x0, y0);
         }
+        break;
+      }
+      case "cubicBezier": {
+        const isTypeCubicBezier = transitionType as TCubicBezierFunction;
+        const { x1, y1, x2, y2 } = isTypeCubicBezier.cubicBezier;
+        startCubicBezier([x1, x2], [y1, y2]);
         break;
       }
 
