@@ -21,18 +21,15 @@ function useCubicBezier({
     const animate = (currentTime: number) => {
       const elapsedTime = currentTime - startTime;
 
-      console.log("p1, p2", p1, p2);
-
       const t = Math.min(elapsedTime / duration, 1);
-      const [x, y] = easeCubicBezier(p1, p2, t);
-      const numberValue = (x + y) / 2;
+      const [easingValueX, easingValueY] = easeCubicBezier(p1, p2, t);
 
       // 0-100 or 100-0
       const range = transitionTo - transitionFrom;
 
       // 4% - 4 + 4
-      const newValue = numberValue * range + transitionFrom;
-      console.log("new value - ", newValue);
+      const newValue =
+        ((easingValueX + easingValueY) / 2) * (range + transitionFrom);
       setCubicBezierNumber(newValue);
 
       if (t < 1) {

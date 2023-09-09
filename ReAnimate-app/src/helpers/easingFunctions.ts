@@ -5,22 +5,31 @@ export function easeLinear(t: number) {
   return t;
 }
 
-// Ease-in
+// De Casteljau's Algorithm
 export function easeCubicBezier(p1: TPoint, p2: TPoint, t: number): TPoint {
-  // p0 and p1 are fixed values for the curve range
+  if (t < 0 || t > 1) {
+    throw new Error("t must be between 0 and 1");
+  }
+
+  // Define the initial and final control points as arrays
   const p0: TPoint = [0, 0];
   const p3: TPoint = [1, 1];
-  // Ensure t is within the range [0, 1]
-  t = Math.min(1, Math.max(0, t));
 
-  const term1 = (1 - t) ** 3;
-  const term2 = 3 * (1 - t) ** 2 * t;
-  const term3 = 3 * (1 - t) * t ** 2;
-  const term4 = t ** 3;
+  // Calculate intermediate control points
+  const q0: TPoint = lerp(p0, p1, t);
+  const q1: TPoint = lerp(p1, p2, t);
+  const q2: TPoint = lerp(p2, p3, t);
 
-  // Calculate both x and y coordinates
-  const x = term1 * p0[0] + term2 * p1[0] + term3 * p2[0] + term4 * p3[0];
-  const y = term1 * p0[1] + term2 * p1[1] + term3 * p2[1] + term4 * p3[1];
+  // Calculate points along the second set of lines
+  const r0: TPoint = lerp(q0, q1, t);
+  const r1: TPoint = lerp(q1, q2, t);
 
-  return [x, y];
+  // Calculate the final point on the curve
+  const pointOnCurve: TPoint = lerp(r0, r1, t);
+
+  // Calculate the average of x and y components
+  return pointOnCurve;
+}
+function lerp(start: TPoint, end: TPoint, t: number): TPoint {
+  return [start[0] * (1 - t) + end[0] * t, start[1] * (1 - t) + end[1] * t];
 }

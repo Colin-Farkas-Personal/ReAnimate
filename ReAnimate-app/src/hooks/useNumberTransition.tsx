@@ -23,10 +23,7 @@ interface useNumberTransitionParams {
     | (TCubicBezierKeyWords | TCubicBezierFunction);
   decimalPlaces?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
 }
-interface useNumberTransitionReturn {
-  number: string;
-  startTransition: () => void;
-}
+type useNumberTransitionReturn = [string, () => void];
 
 /**
  * A custom hook that manages transitions between numbers using different easing types.
@@ -46,7 +43,7 @@ function useNumberTransition({
   transitionType,
   decimalPlaces,
 }: useNumberTransitionParams): useNumberTransitionReturn {
-  const [number, setNumber] = useState<number>(transitionFrom);
+  const [numberValue, setNumberValue] = useState<number>(transitionFrom);
 
   const { linearSimpleNumber, startLinearSimple } = useLinearSimple({
     transitionFrom,
@@ -118,17 +115,14 @@ function useNumberTransition({
 
   function useNumberSetter(value: number) {
     useEffect(() => {
-      if (value !== undefined) setNumber(value);
+      if (value !== undefined) setNumberValue(value);
 
       return () => {
-        setNumber(0);
+        setNumberValue(0);
       };
     }, [value]);
   }
 
-  return {
-    number: number.toFixed(decimalPlaces),
-    startTransition,
-  };
+  return [numberValue.toFixed(decimalPlaces), startTransition];
 }
 export default useNumberTransition;

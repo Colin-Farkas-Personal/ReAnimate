@@ -1,17 +1,31 @@
 import useNumberTransition from "./hooks/useNumberTransition";
 
 function App() {
-  const { number, startTransition } = useNumberTransition({
+  const [number1, startTransition1] = useNumberTransition({
     transitionFrom: 0,
-    transitionTo: -1000,
-    duration: 3000,
-    transitionType: { cubicBezier: [0.19, 0.35, 0.36, 1.25] },
+    transitionTo: 9999,
+    duration: 2000,
+    transitionType: "easeIn",
+  });
+  const [number2, startTransition2] = useNumberTransition({
+    transitionFrom: 0,
+    transitionTo: 9999,
+    duration: 2000,
+    transitionType: "easeOut",
   });
 
   return (
     <div>
-      <h1>${number}</h1>
-      <button onClick={startTransition}>Start Transition</button>
+      <h1>${number1}</h1>
+      <h1>${number2}</h1>
+      <button
+        onClick={() => {
+          startTransition1();
+          startTransition2();
+        }}
+      >
+        Start Transition
+      </button>
       {/* <button onClick={cancelTransition}>Cancel Transition</button> */}
     </div>
   );
