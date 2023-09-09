@@ -1,7 +1,11 @@
 import { useState, useRef, useCallback } from "react";
 import { easeCubicBezier } from "../helpers/easingFunctions";
 import { TPoint } from "../types/TEasingFunctions";
-import { TAnimationCallback, animatePromise } from "../utilities/animate";
+import {
+  TAnimationCallback,
+  animatePromise,
+  calculateNewValue,
+} from "../utilities/animate";
 
 interface UseCubicBezierProps {
   transitionFrom: number;
@@ -17,14 +21,14 @@ function useCubicBezier({
   const [cubicBezierNumber, setCubicBezierNumber] = useState<number>(0);
 
   function startCubicBezier(p1: TPoint, p2: TPoint) {
-    const myAnimationCallback = ({ progress, to }: TAnimationCallback) => {
+    const animationCallback = ({ progress, from, to }: TAnimationCallback) => {
       const [x, y] = easeCubicBezier(p1, p2, progress);
-      const cubicValue = (x + y) / 2;
-      const newValue = cubicValue * to;
+      const easeValue = (x + y) / 2;
+      const newValue = calculateNewValue(easeValue, from, to);
       setCubicBezierNumber(newValue);
     };
 
-    animatePromise(myAnimationCallback, duration, transitionFrom, transitionTo);
+    animatePromise(animationCallback, duration, transitionFrom, transitionTo);
   }
   function cancelCubicBezier() {}
 

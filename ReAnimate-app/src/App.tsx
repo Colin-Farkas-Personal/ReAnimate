@@ -3,14 +3,14 @@ import useNumberTransition from "./hooks/useNumberTransition";
 function App() {
   const [number1, startTransition1] = useNumberTransition({
     transitionFrom: 0,
-    transitionTo: 9999,
-    duration: 2000,
-    transitionType: "linear",
+    transitionTo: 10,
+    duration: 5000,
+    transitionType: { linear: { x0: 0, easingPoint: "0.4 30%", y0: 1 } },
   });
   const [number2, startTransition2] = useNumberTransition({
     transitionFrom: 0,
-    transitionTo: 9999,
-    duration: 2000,
+    transitionTo: 10,
+    duration: 5000,
     transitionType: "easeOut",
   });
 

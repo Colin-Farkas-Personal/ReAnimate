@@ -1,7 +1,11 @@
 import { useState, useRef, useCallback } from "react";
 import { Linear } from "../utilities/Linear";
 import { easeLinear } from "../helpers/easingFunctions";
-import { TAnimationCallback, animatePromise } from "../utilities/animate";
+import {
+  TAnimationCallback,
+  animatePromise,
+  calculateNewValue,
+} from "../utilities/animate";
 
 interface UseLinearSimpleProps {
   transitionFrom: number;
@@ -23,14 +27,18 @@ function useLinearSimple({
       const vX0 = values.numberX0;
       const vY0 = values.numberY0;
 
-      const myAnimationCallback = ({ progress, to }: TAnimationCallback) => {
+      const animationCallback = ({
+        progress,
+        from,
+        to,
+      }: TAnimationCallback) => {
         // Implement your animation based on the progress value
         const easeValue = easeLinear(progress);
-        const newValue = easeValue * to;
+        const newValue = calculateNewValue(easeValue, from, to);
         setLinearNumber(newValue);
       };
 
-      animatePromise(myAnimationCallback, duration, vX0, vY0);
+      animatePromise(animationCallback, duration, vX0, vY0);
     },
     [duration]
   );
