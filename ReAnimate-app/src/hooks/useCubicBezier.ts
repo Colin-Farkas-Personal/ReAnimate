@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from "react";
-import { Linear } from "../utilities/Linear";
-import { easeCubicBezier, easeLinear } from "../helpers/easingFunctions";
+import { easeCubicBezier } from "../helpers/easingFunctions";
+import { TPoint } from "../types/TEasingFunctions";
 
 interface UseCubicBezierProps {
   transitionFrom: number;
@@ -13,42 +13,25 @@ function useCubicBezier({
   transitionTo,
   duration,
 }: UseCubicBezierProps) {
-  const [cubicBezierNumber, setCubicBezierNumber] = useState<
-    number | undefined
-  >(undefined);
+  const [cubicBezierNumber, setCubicBezierNumber] = useState<number>(0);
   const animationRef = useRef<number | null>(null);
 
-  function startCubicBezier(p1: [number, number], p2: [number, number]) {
-    const p0 = [0, 0];
-    const p3 = [1, 1];
-
-    function cubicBezierTransition(t: number): number {
-      // Ensure t is within the range [0, 1]
-      t = Math.min(1, Math.max(0, t));
-
-      // Calculate intermediate values
-      const term1 = (1 - t) ** 3;
-      const term2 = 3 * (1 - t) ** 2 * t;
-      const term3 = 3 * (1 - t) * t ** 2;
-      const term4 = t ** 3;
-
-      // Calculate x coordinate
-      const x = term1 * p0[0] + term2 * p1[0] + term3 * p2[0] + term4 * p3[0];
-
-      return x;
-    }
-
+  function startCubicBezier(p1: TPoint, p2: TPoint) {
     const startTime = performance.now();
     const animate = (currentTime: number) => {
       const elapsedTime = currentTime - startTime;
 
-      const t = Math.min(elapsedTime / duration, 1);
-      const numberValue = cubicBezierTransition(t);
+      console.log("p1, p2", p1, p2);
 
+      const t = Math.min(elapsedTime / duration, 1);
+      const [x, y] = easeCubicBezier(p1, p2, t);
+      const numberValue = (x + y) / 2;
+
+      // 0-100 or 100-0
       const range = transitionTo - transitionFrom;
 
       // 4% - 4 + 4
-      const newValue = numberValue * range;
+      const newValue = numberValue * range + transitionFrom;
       console.log("new value - ", newValue);
       setCubicBezierNumber(newValue);
 

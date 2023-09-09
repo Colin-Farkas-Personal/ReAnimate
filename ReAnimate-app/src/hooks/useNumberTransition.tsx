@@ -5,9 +5,14 @@ import {
   TLinearFunction,
   TCubicBezierKeyWords,
   TCubicBezierFunction,
+  TPoint,
 } from "../types/TEasingFunctions";
 import useLinearSimple from "./useLinearSimple";
 import useCubicBezier from "./useCubicBezier";
+import {
+  TRANSITION_FUNCTIONS,
+  predefined,
+} from "../types/PredefinedTransitionFunctions";
 
 interface useNumberTransitionParams {
   transitionFrom: number;
@@ -48,65 +53,41 @@ function useNumberTransition({
     transitionTo,
     duration,
   });
+  useNumberSetter(linearSimpleNumber);
   const { linearComplexNumber, startLinearComplex } = useLinearComplex({
     transitionFrom,
     transitionTo,
     duration,
   });
+  useNumberSetter(linearComplexNumber);
 
   const { cubicBezierNumber, startCubicBezier } = useCubicBezier({
     transitionFrom,
     transitionTo,
     duration,
   });
-
-  useEffect(() => {
-    if (linearSimpleNumber !== undefined) {
-      setNumber(linearSimpleNumber);
-    }
-
-    return () => {
-      setNumber(0);
-    };
-  }, [linearSimpleNumber]);
-
-  useEffect(() => {
-    if (linearComplexNumber !== undefined) {
-      setNumber(linearComplexNumber);
-    }
-
-    return () => {
-      setNumber(0);
-    };
-  }, [linearComplexNumber]);
-
-  useEffect(() => {
-    if (cubicBezierNumber !== undefined) {
-      setNumber(cubicBezierNumber);
-    }
-
-    return () => {
-      setNumber(0);
-    };
-  }, [cubicBezierNumber]);
+  useNumberSetter(cubicBezierNumber);
 
   function startTransition() {
+    // Predefined transition functions
     if (typeof transitionType === "string") {
       switch (transitionType) {
-        case "linear": {
-          startLinearSimple(0, 1);
+        case TRANSITION_FUNCTIONS.LINEAR:
+          startLinearSimple(...predefined[transitionType]);
           break;
-        }
 
-        case "ease": {
-          // easeTransition
-        }
+        case TRANSITION_FUNCTIONS.EASE:
+        case TRANSITION_FUNCTIONS.EASE_IN:
+        case TRANSITION_FUNCTIONS.EASE_OUT:
+        case TRANSITION_FUNCTIONS.EASE_IN_OUT:
+          startCubicBezier(...predefined[transitionType]);
+          break;
       }
 
       return;
     }
 
-    // Linear logic
+    // Defined transition functions
     const selectedTransitionType = Object.keys(transitionType).toString();
     switch (selectedTransitionType) {
       case "linear": {
@@ -122,8 +103,10 @@ function useNumberTransition({
       }
       case "cubicBezier": {
         const isTypeCubicBezier = transitionType as TCubicBezierFunction;
-        const { x1, y1, x2, y2 } = isTypeCubicBezier.cubicBezier;
-        startCubicBezier([x1, x2], [y1, y2]);
+        const [x1, y1, x2, y2] = isTypeCubicBezier.cubicBezier;
+        const p1: TPoint = [x1, y1];
+        const p2: TPoint = [x2, y2];
+        startCubicBezier(p1, p2);
         break;
       }
 
@@ -131,6 +114,16 @@ function useNumberTransition({
         throw new Error("Provide a valid transitionType");
         break;
     }
+  }
+
+  function useNumberSetter(value: number) {
+    useEffect(() => {
+      if (value !== undefined) setNumber(value);
+
+      return () => {
+        setNumber(0);
+      };
+    }, [value]);
   }
 
   return {

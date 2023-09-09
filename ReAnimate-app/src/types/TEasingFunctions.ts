@@ -6,6 +6,8 @@ export type TLinearFunction = {
 };
 
 export type TCubicBezierKeyWords = "ease" | "easeIn" | "easeOut" | "easeInOut";
+export type TPoint = [number, number];
+export type TCubicBezier = [TPoint, TPoint];
 export type TCubicBezierFunction = {
-  cubicBezier: { x1: number; y1: number; x2: number; y2: number };
+  cubicBezier: [number, number, number, number];
 };
