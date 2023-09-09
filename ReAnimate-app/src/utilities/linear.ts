@@ -19,10 +19,6 @@ export class Linear {
     return Math.abs(this._transitionTo - this._transitionFrom);
   }
 
-  private calculateInterval(diff: number): number {
-    return Math.round(this._duration / Math.abs(diff));
-  }
-
   simple(
     x0: number,
     y0: number
@@ -41,20 +37,7 @@ export class Linear {
     };
   }
 
-  getDirectionNumber(
-    number1: number,
-    number2: number,
-    prevState: number
-  ): number {
-    if (number1 > number2) {
-      return prevState - 1;
-    } else if (number1 < number2) {
-      return prevState + 1;
-    }
-
-    return prevState;
-  }
-
+  // TODO: Set math.min math.max?
   private validateEasingPoint(easingPoint: number | string): void {
     if (typeof easingPoint === "number") {
       if (easingPoint < 0 || easingPoint > 1) {

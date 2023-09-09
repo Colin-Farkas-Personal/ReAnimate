@@ -5,7 +5,7 @@ function App() {
     transitionFrom: 0,
     transitionTo: 9999,
     duration: 2000,
-    transitionType: "easeIn",
+    transitionType: "linear",
   });
   const [number2, startTransition2] = useNumberTransition({
     transitionFrom: 0,
