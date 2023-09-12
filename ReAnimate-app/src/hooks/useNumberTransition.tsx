@@ -66,6 +66,13 @@ function useNumberTransition({
   useNumberSetter(cubicBezierNumber);
 
   function startTransition() {
+    console.log(
+      "values - ",
+      transitionFrom,
+      transitionTo,
+      transitionType,
+      duration
+    );
     // Predefined transition functions
     if (typeof transitionType === "string") {
       switch (transitionType) {

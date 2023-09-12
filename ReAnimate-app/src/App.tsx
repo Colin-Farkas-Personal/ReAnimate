@@ -1,33 +1,17 @@
-import useNumberTransition from "./hooks/useNumberTransition";
+import reAnimate from "./components/animate.element";
 
 function App() {
-  const [number1, startTransition1] = useNumberTransition({
-    transitionFrom: 0,
-    transitionTo: 10,
-    duration: 5000,
-    transitionType: { linear: { x0: 0, easingPoint: "0.4 30%", y0: 1 } },
-  });
-  const [number2, startTransition2] = useNumberTransition({
-    transitionFrom: 0,
-    transitionTo: 10,
-    duration: 5000,
-    transitionType: "easeOut",
-  });
-
   return (
-    <div>
-      <h1>${number1}</h1>
-      <h1>${number2}</h1>
-      <button
-        onClick={() => {
-          startTransition1();
-          startTransition2();
-        }}
+    <section>
+      <reAnimate.element
+        triggerOn="onMount"
+        transitionFrom={{ opacity: 0 }}
+        transitionTo={{ opacity: 100 }}
+        duration={3000}
       >
-        Start Transition
-      </button>
-      {/* <button onClick={cancelTransition}>Cancel Transition</button> */}
-    </div>
+        <h1>Number text</h1>
+      </reAnimate.element>
+    </section>
   );
 }
 

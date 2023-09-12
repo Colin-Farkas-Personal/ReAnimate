@@ -1,0 +1,13 @@
+.square {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 6.25rem;
+  height: 6.25rem;
+  background-color: rgb(193, 125, 0);
+  border-radius: 0.5rem;
+
+  font-weight: bold;
+  color: white;
+}
